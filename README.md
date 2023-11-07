@@ -1,6 +1,5 @@
 # PrimePlaceHolders
-A placeholder plugin for pocketmine plugins 
-
+A placeholder plugin for [PocketMine](https://i.imgur.com/qpnk5BX.png)
 
 ## Avialble Placeholders:
 - `%player%` - Player Name
