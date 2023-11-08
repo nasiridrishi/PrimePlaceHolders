@@ -36,22 +36,22 @@ class PrimePlaceHolder extends PluginBase{
     }
 
     public function setPlaceHolders(array|string $text, Player $player): array|string {
-        if(is_array($text)){
-            foreach($text as $key => $value){
+        if (is_array($text)) {
+            foreach ($text as $key => $value) {
                 $text[$key] = $this->setPlaceHolders($value, $player);
             }
-        }else{
-//            preg_match_all("/%([a-zA-Z0-9]+)%/", $text, $matches);
-//            foreach($matches[1] as $match) {
-//                if(isset($this->placeholders[$match])) {
-//                    $text = str_replace("%" . $match . "%", $this->placeholders[$match]->onRequest($player, $text), $text);
-//                }
-//            }
-            //check for placeholder for arugments formated as %identifier_<argument>% or %identifier%
-            preg_match_all("/%([a-zA-Z0-9]+)(?:_([a-zA-Z0-9]+))?%/", $text, $matches);
-            foreach($matches[1] as $key => $match) {
+        } else {
+            //pattern can also have _ in it
+            preg_match_all("/%([a-zA-Z0-9_]+)%/", $text, $matches);
+            foreach($matches[1] as $match) {
                 if(isset($this->placeholders[$match])) {
-                    $text = str_replace("%" . $matches[0][$key] . "%", $this->placeholders[$match]->onRequest($player, $matches[0][$key]), $text);
+                    $text = str_replace("%" . $match . "%", $this->placeholders[$match]->onRequest($player, ""), $text);
+                }elseif(str_contains($match, "_")) {
+                    $args = explode("_", $match);
+                    $identifier = array_shift($args);
+                    if(isset($this->placeholders[$identifier])) {
+                        $text = str_replace("%" . $match . "%", $this->placeholders[$identifier]->onRequest($player, implode("_", $args)), $text);
+                    }
                 }
             }
         }
@@ -62,49 +62,48 @@ class PrimePlaceHolder extends PluginBase{
 
 
     private function registerCommons(): void{
-        $this->registerPlaceHolder(new ClosurePlaceHolder("player", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("player", function (Player $player, string $args): string {
             return $player->getName();
         }));
-        $this->registerPlaceHolder(new ClosurePlaceHolder("displayname", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("displayname", function (Player $player, string $args): string {
             return $player->getDisplayName();
         }));
-        $this->registerPlaceHolder(new ClosurePlaceHolder("ping", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("ping", function (Player $player, string $args): string {
             return ($ping = $player->getNetworkSession()->getPing()) !== null ? (string)$ping : "0";
         }));
-        $this->registerPlaceHolder(new ClosurePlaceHolder("gamemode", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("gamemode", function (Player $player, string $args): string {
             return $player->getGameMode()->getEnglishName();
         }));
-        $this->registerPlaceHolder(new ClosurePlaceHolder("health", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("health", function (Player $player, string $args): string {
             return (string)$player->getHealth();
         }));
-        $this->registerPlaceHolder(new ClosurePlaceHolder("maxhealth", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("maxhealth", function (Player $player, string $args): string {
             return (string)$player->getMaxHealth();
         }));
         //world placeholders
-        $this->registerPlaceHolder(new ClosurePlaceHolder("world", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("world", function (Player $player, string $args): string {
             return $player->getWorld()->getFolderName();
         }));
-        $this->registerPlaceHolder(new ClosurePlaceHolder("worldtime", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("worldtime", function (Player $player, string $args): string {
             return (string)$player->getWorld()->getTime();
         }));
         //pos_x
-        $this->registerPlaceHolder(new ClosurePlaceHolder("pos_x", function (Player $player, string $string): string {
-            return (string)$player->getPosition()->getFloorX();
-        }));
-        //pos_y
-        $this->registerPlaceHolder(new ClosurePlaceHolder("pos_y", function (Player $player, string $string): string {
-            return (string)$player->getPosition()->getFloorY();
-        }));
-        //pos_z
-        $this->registerPlaceHolder(new ClosurePlaceHolder("pos_z", function (Player $player, string $string): string {
-            return (string)$player->getPosition()->getFloorZ();
+        $this->registerPlaceHolder(new ClosurePlaceHolder("pos", function (Player $player, string $args): string {
+            if($args === "x") {
+                return (string)$player->getPosition()->getFloorX();
+            }elseif($args === "y") {
+                return (string)$player->getPosition()->getFloorY();
+            }elseif($args === "z") {
+                return (string)$player->getPosition()->getFloorZ();
+            }
+            return "";
         }));
         //online players
-        $this->registerPlaceHolder(new ClosurePlaceHolder("online_players", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("online_players", function (Player $player, string $args): string {
             return (string)count($player->getServer()->getOnlinePlayers());
         }));
         //max players
-        $this->registerPlaceHolder(new ClosurePlaceHolder("max_players", function (Player $player, string $string): string {
+        $this->registerPlaceHolder(new ClosurePlaceHolder("max_players", function (Player $player, string $args): string {
             return (string)$player->getServer()->getMaxPlayers();
         }));
     }

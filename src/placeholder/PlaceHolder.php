@@ -16,5 +16,5 @@ abstract class PlaceHolder {
         return $this->identifier;
     }
 
-    public abstract function onRequest(Player $player, string $string): string;
+    public abstract function onRequest(Player $player, string $args): string;
 }

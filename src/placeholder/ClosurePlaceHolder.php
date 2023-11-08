@@ -13,10 +13,10 @@ class ClosurePlaceHolder extends PlaceHolder {
      */
     public function __construct(string $identifier, private \Closure $closure) {
         parent::__construct($identifier);
-        Utils::validateCallableSignature(function(Player $player, string $string): string{}, $closure);
+        Utils::validateCallableSignature(function(Player $player, string $args): string{}, $closure);
     }
 
-    public function onRequest(Player $player, string $string): string {
-        return ($this->closure)($player, $string);
+    public function onRequest(Player $player, string $args): string {
+        return ($this->closure)($player, $args);
     }
 }
