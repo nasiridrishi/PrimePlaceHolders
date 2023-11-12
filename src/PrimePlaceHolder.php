@@ -32,6 +32,10 @@ class PrimePlaceHolder extends PluginBase{
     }
 
     public function registerPlaceHolder(PlaceHolder $placeHolder): void {
+        if(isset($this->placeholders[$placeHolder->getIdentifier()])) {
+            $this->getLogger()->warning("Failed to register placeholder " . $placeHolder->getIdentifier() . " as it was already registered!");
+            return;
+        }
         $this->placeholders[$placeHolder->getIdentifier()] = $placeHolder;
     }
 
@@ -41,7 +45,6 @@ class PrimePlaceHolder extends PluginBase{
                 $text[$key] = $this->setPlaceHolders($value, $player);
             }
         } else {
-            //pattern can also have _ in it
             preg_match_all("/%([a-zA-Z0-9_]+)%/", $text, $matches);
             foreach($matches[1] as $match) {
                 if(isset($this->placeholders[$match])) {

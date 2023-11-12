@@ -1,6 +1,6 @@
 name: PrimePlaceHolder
 main: nasiridrishi\primeplaceholder\PrimePlaceHolder
 src-namespace-prefix: nasiridrishi\primeplaceholder
-version: 1.0.0
+version: 0.0.1
 api: [5.0.0]
 author: nasiridrishi
