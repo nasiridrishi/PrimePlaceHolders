@@ -41,3 +41,7 @@ PrimePlaceHolder::getInstance()->registerPlaceholder(new ClosurePlaceHolder("ide
 ```php
 PrimePlaceHolder::getInstance()->setPlaceholders($player, $string);
 ```
+
+---
+
+### [Help/Report Bugs(Discord)](https://discord.gg/eqxV2HEkhh)
